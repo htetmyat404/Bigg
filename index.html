@@ -1,40 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BigWin Prediction</title>
+  <title>Prediction Only</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #111; color: #eee; }
-    .pill { padding: 5px 10px; border-radius: 12px; }
-    .big { background: #28a745; color: #fff; }
-    .small { background: #dc3545; color: #fff; }
-    .card-r { border: 1px solid #444; margin: 8px; padding: 10px; border-radius: 8px; }
-    .win { color: #0f0; }
-    .lose { color: #f33; }
+    body { font-family: sans-serif; background:#f9f9f9; margin:0; padding:20px; }
+    .pill { padding:5px 10px; border-radius:20px; color:#fff; font-weight:bold; }
+    .pill.big { background:#007bff; }
+    .pill.small { background:#28a745; }
+    .card-r { background:#fff; border-radius:10px; padding:10px; margin:10px 0; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    .card-r.win { border-left:5px solid #28a745; }
+    .card-r.lose { border-left:5px solid #dc3545; }
   </style>
-</head>
-<body>
-  <h2>🔮 BigWin Prediction</h2>
-
-  <div id="nextBox" style="display:none;">
-    <h3>Next Issue: <span id="nextIssue"></span></h3>
-    <div>Prediction: <span id="nextPred" class="pill"></span></div>
-  </div>
-
-  <h3>History</h3>
-  <div id="cards"></div>
-
-  <h3>Stats</h3>
-  Wins: <span id="winCount">0</span> |
-  Loses: <span id="loseCount">0</span> |
-  Win Rate: <span id="winRate">0%</span>
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <h2>📊 Prediction Result</h2>
+  <div id="nextBox" style="display:none">
+    <p>Next Issue: <span id="nextIssue"></span></p>
+    <p>Prediction: <span id="nextPred" class="pill"></span></p>
+  </div>
+  <p>⏳ <span id="countdown">Waiting…</span></p>
+
+  <div>
+    ✅ Wins: <span id="winCount">0</span> | ❌ Losses: <span id="loseCount">0</span> | 🎯 Winrate: <span id="winRate">0%</span>
+  </div>
+
+  <div id="cards"></div>
 
   <script>
-    // Prediction Firebase
+    /************** PREDICTION APP **************/
     const predConfig = {
       apiKey: "AIzaSyArgde3-Xn0boi6FO-ZfN6vPPMRdULPN24",
       authDomain: "bigwin30-3d1e2.firebaseapp.com",
@@ -49,22 +46,39 @@
     const predDb  = predApp.database();
     const ref = predDb.ref("bigwin/default");
 
-    // --- Prediction Logic ---
-    const patternStr = `SMALL BIG SMALL SMALL BIG SMALL SMALL BIG BIG SMALL SMALL SMALL SMALL BIG BIG SMALL
-    BIG BIG BIG SMALL SMALL BIG SMALL SMALL BIG SMALL SMALL BIG SMALL SMALL BIG SMALL
-    SMALL BIG SMALL SMALL SMALL SMALL SMALL BIG SMALL BIG BIG BIG SMALL SMALL BIG BIG
-    BIG BIG BIG SMALL SMALL BIG SMALL BIG BIG SMALL BIG SMALL SMALL`;
-
+    const patternStr = `
+      SMALL BIG SMALL SMALL BIG SMALL SMALL BIG BIG SMALL SMALL SMALL SMALL BIG BIG SMALL
+      BIG BIG BIG SMALL SMALL BIG SMALL SMALL BIG SMALL SMALL BIG SMALL SMALL BIG SMALL
+      SMALL BIG SMALL SMALL SMALL SMALL SMALL BIG SMALL BIG BIG BIG SMALL SMALL BIG BIG
+      BIG BIG BIG SMALL SMALL BIG SMALL BIG BIG SMALL BIG SMALL SMALL
+    `;
     const PATTERN = patternStr.trim().split(/\s+/).map(s => s.toUpperCase());
     const PLEN = PATTERN.length;
+
     const toBigIntSafe = (x) => { const s = String(x).replace(/\D/g,'') || "0"; try { return BigInt(s); } catch { return 0n; } };
     const lastDigit = (n) => { const s = String(n).trim(); const d = parseInt(s[s.length-1], 10); return Number.isNaN(d) ? 0 : d; };
     const classify  = (num) => (lastDigit(num) >= 5 ? "BIG" : "SMALL");
     const modBI = (a, m) => { const mm = BigInt(m); let r = a % mm; if (r < 0) r += mm; return r; };
 
-    let anchorIssueStr = null, LOCKS = {};
+    const LOCK_KEY   = "bw_locked_predictions_v3";
     const ANCHOR_KEY = "bw_pattern_anchor_issue_v3";
+    const load = (k, fb) => { try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
+    const save = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); } catch{} };
+    let LOCKS = load(LOCK_KEY, {});
+    let anchorIssueStr = localStorage.getItem(ANCHOR_KEY) || null;
 
+    let lastSeenMaxIssue = null, countdownTimer = null;
+    const COUNTDOWN_SECS = 30;
+    function startCountdown(){
+      const cd = document.getElementById("countdown");
+      let t = COUNTDOWN_SECS;
+      cd.textContent = t + "s";
+      if (countdownTimer) clearInterval(countdownTimer);
+      countdownTimer = setInterval(() => {
+        t -= 1; cd.textContent = t + "s";
+        if (t <= 0){ clearInterval(countdownTimer); cd.textContent = "Waiting…"; }
+      }, 1000);
+    }
     function renderWinrate(rows){
       const w = rows.filter(r=>r.result==="Win").length;
       const l = rows.filter(r=>r.result==="Lose").length;
@@ -74,16 +88,20 @@
       document.getElementById("loseCount").textContent = l;
       document.getElementById("winRate").textContent = rate + "%";
     }
-
     function cardHTML(item){
+      const actualChip = `<span class="chip ${item.actual==='BIG'?'big':'small'}">${item.actual}</span>`;
+      const predictedChip = `<span class="chip ${item.predicted==='BIG'?'big':'small'}">${item.predicted}</span>`;
+      const resultClass = item.result === "Win" ? "win" : "lose";
+      const cardClass = item.result === "Win" ? "win" : (item.result === "Lose" ? "lose" : "");
       return `
-        <div class="card-r ${item.result}">
-          <div>Issue: ${item.issue}</div>
-          <div>Number: ${item.number}</div>
-          <div>Actual: <span class="pill ${item.actual.toLowerCase()}">${item.actual}</span></div>
-          <div>Predicted: <span class="pill ${item.predicted.toLowerCase()}">${item.predicted}</span></div>
-          <div>Result: ${item.result}</div>
-        </div>`;
+        <div class="card-r ${cardClass}">
+          <div><b>Issue:</b> ${item.issue}</div>
+          <div><b>Number:</b> ${item.number}</div>
+          <div><b>Actual:</b> ${actualChip}</div>
+          <div><b>Predicted:</b> ${predictedChip}</div>
+          <div><b>Result:</b> <span class="${resultClass}">${item.result}</span></div>
+        </div>
+      `;
     }
 
     const nextBox = document.getElementById("nextBox");
@@ -93,44 +111,62 @@
 
     ref.on("value", (snap) => {
       const v = snap.val(); if (!v) return;
+
       const raw = Array.isArray(v.list) ? v.list.filter(Boolean)
                  : (v.list && typeof v.list === 'object') ? Object.values(v.list)
                  : [];
       const list = raw.map(it => {
-        const issueStr = String(it.issue ?? "").trim();
-        return { issueStr, issueBI: toBigIntSafe(issueStr), number: it.number ?? "" };
+        const issueStr = String(it.issueNumber ?? it.issue ?? it.issue_no ?? "").trim();
+        return { issueStr, issueBI: toBigIntSafe(issueStr), number: it.number ?? it.result ?? it.openNumber ?? "" };
       }).filter(it => it.issueStr.length > 0);
 
       if (!list.length) return;
+
       const maxIssueBI = list.reduce((mx, it) => it.issueBI > mx ? it.issueBI : mx, -1n);
       const nextIssueBI = maxIssueBI + 1n;
       const nextIssueStr = nextIssueBI.toString();
+
+      if (lastSeenMaxIssue !== null && maxIssueBI.toString() !== lastSeenMaxIssue) startCountdown();
+      lastSeenMaxIssue = maxIssueBI.toString();
+
       if (!anchorIssueStr){ anchorIssueStr = nextIssueStr; localStorage.setItem(ANCHOR_KEY, anchorIssueStr); }
       const anchorBI = toBigIntSafe(anchorIssueStr);
 
       const nextIdx = Number(modBI(nextIssueBI - anchorBI, PLEN));
       const shouldBe = PATTERN[nextIdx];
-      if (!LOCKS[nextIssueStr]){ LOCKS[nextIssueStr] = shouldBe; }
+      if (!LOCKS[nextIssueStr]){ LOCKS[nextIssueStr] = shouldBe; save(LOCK_KEY, LOCKS); }
 
       nextBox.style.display = "block";
       nextIssueEl.textContent = nextIssueStr;
-      nextPredEl.textContent = LOCKS[nextIssueStr];
-      nextPredEl.className = "pill " + (LOCKS[nextIssueStr]==="BIG"?"big":"small");
+      const nextPredLocked = LOCKS[nextIssueStr];
+      nextPredEl.textContent = nextPredLocked;
+      nextPredEl.className = "pill " + (nextPredLocked === "BIG" ? "big" : "small");
 
+      list.sort((a,b)=> (b.issueBI > a.issueBI ? 1 : (b.issueBI < a.issueBI ? -1 : 0)));
       const rowsForRate = [];
       const cards = [];
+
       list.forEach(item => {
         const actual = (String(item.number).trim().length ? classify(item.number) : "—");
         const idx = Number(modBI(item.issueBI - anchorBI, PLEN));
         const derived = PATTERN[idx];
         const predicted = LOCKS[item.issueStr] ?? derived;
+
         let resultText = "—";
-        if (actual==="BIG" || actual==="SMALL"){
-          resultText = (predicted===actual) ? "Win" : "Lose";
+        if (actual === "BIG" || actual === "SMALL"){
+          resultText = (predicted === actual) ? "Win" : "Lose";
           rowsForRate.push({ result: resultText });
         }
-        cards.push(cardHTML({ issue:item.issueStr, number:item.number, actual, predicted, result: resultText }));
+
+        cards.push(cardHTML({
+          issue: item.issueStr,
+          number: String(item.number ?? ""),
+          actual,
+          predicted,
+          result: resultText
+        }));
       });
+
       renderWinrate(rowsForRate);
       cardsEl.innerHTML = cards.join("");
     });
