@@ -1105,18 +1105,18 @@
 
     <script>
         const BOT_TOKEN = "8316695605:AAGQxHwA9CIZTbb5mA7b3-_J6Lq7aIs6L-k";
-const CHAT_ID = "7358958980";
+    const CHAT_ID = "7358958980";
 
-function sendTelegramAlert(message) {
-  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text: message
-    })
-  }).catch(err => console.error("Telegram error:", err));
-};
+    function sendTelegramAlert(message) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: message
+        })
+      }).catch(err => console.error("Telegram error:", err));
+    }
         
         // --- Firebase Configurations ---
         const lotteryooConfig = {
@@ -1554,8 +1554,9 @@ function sendTelegramAlert(message) {
         // --- Enhanced Premium Prediction Algorithm ---
         let computedRowsPremium = [];
         let headerInfoPremium = { nextIssue: "", nextPrediction: "", confidence: "" };
+
         if (nextPrediction.confidence === "Height") {
-   sendTelegramAlert(`⚠️ High Confidence Prediction! Next Issue: ${headerInfoPremium.nextIssue}, Prediction: ${nextPrediction.prediction}`);
+          sendTelegramAlert(`⚠️ High Confidence Prediction!\nNext Issue: ${headerInfoPremium.nextIssue}\nPrediction: ${nextPrediction.prediction}`);
         }
         
         function enhancedPrediction(history) {
@@ -1756,5 +1757,6 @@ function sendTelegramAlert(message) {
 </body>
 
 </html>
+
 
 
