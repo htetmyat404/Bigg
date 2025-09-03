@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Lottery Tricks AI Prediction</title>
+    <meta name="description" content="Advanced AI-powered lottery prediction system with premium analytics" />
+    <meta name="keywords" content="lottery, prediction, AI, betting, analytics, BigWin, WinGo" />
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+    
+    <style>
+        /* Premium Dark Design System */
+        :root {
+            /* Dark Base Colors */
+            --bg-main: #0a0a0f;
+            --bg-card: #16161f;
+            --bg-premium: #1a1a26;
+            --bg-free: #161620;
+            
+            /* Text Colors */
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b0;
+            --text-muted: #70707a;
+            
+            /* Premium Gold Theme */
+            --gold-primary: #ffd700;
+            --gold-secondary: #ffed4e;
+            --gold-accent: #fff3a0;
+            --gold-dark: #b8860b;
+            
+            /* Free Blue Theme */
+            --blue-primary: #4c9aff;
+            --blue-secondary: #7db3ff;
+            --blue-accent: #b3d1ff;
+            --blue-dark: #0066cc;
+            
+            /* Status Colors */
+            --success: #00ff88;
+            --error: #ff4757;
+            --warning: #ffa502;
+            
+            /* Border & Effects */
+            --border-color: #2a2a35;
+            --border-premium: rgba(255, 215, 0, 0.3);
+            --border-free: rgba(76, 154, 255, 0.3);
+            
+            /* Gradients */
+            --gradient-premium: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #fff3a0 100%);
+            --gradient-free: linear-gradient(135deg, #4c9aff 0%, #7db3ff 50%, #b3d1ff 100%);
+            --gradient-dark: linear-gradient(145deg, #16161f 0%, #0a0a0f 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a26 0%, #16161f 100%);
+            
+            /* Shadows */
+            --shadow-premium: 0 0 40px rgba(255, 215, 0, 0.3);
+            --shadow-free: 0 0 40px rgba(76, 154, 255, 0.3);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 60px rgba(255, 215, 0, 0.4);
+            
+            /* Betting Pills */
+            --pill-big-bg: rgba(255, 165, 0, 0.2);
+            --pill-big-color: #ffa500;
+            --pill-big-border: rgba(255, 165, 0, 0.5);
+            --pill-small-bg: rgba(0, 170, 255, 0.2);
+            --pill-small-color: #00aaff;
+            --pill-small-border: rgba(0, 170, 255, 0.5);
+            
+            /* Animations */
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Reset & Base Styles */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* App Container */
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .content-pages {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Enhanced Container Styles */
+        .container {
+            background: var(--gradient-card);
+            border-radius: 24px;
+            box-shadow: var(--shadow-card);
+            padding: 32px;
+            margin: 20px auto;
+            max-width: 1000px;
+            width: 95%;
+            border: 1px solid var(--border-color);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+
+        .container.premium-style {
+            background: linear-gradient(145deg, var(--bg-premium) 0%, var(--bg-card) 100%);
+            border: 2px solid var(--border-premium);
+            box-shadow: var(--shadow-premium);
+        }
+
+        .container.free-style {
+            background: linear-gradient(145deg, var(--bg-free) 0%, var(--bg-card) 100%);
+            border: 2px solid var(--border-free);
+            box-shadow: var(--shadow-free);
+        }
+
+        /* Header Styles */
+        .header { 
+            text-align: center; 
+            margin-bottom: 32px; 
+            position: relative;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            background: var(--gradient-premium);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .title.free-title {
+            background: var(--gradient-free);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(76, 154, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .credit {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        /* === MODIFIED WARNING MODAL STYLES START === */
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease-out;
+            padding: 20px 0;
+            overflow-y: auto; /* Add scroll for very small screens */
+        }
+
+        .warning-vertical-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 90%;
+            max-width: 450px;
+            animation: scaleIn 0.5s ease-out;
+            margin: auto; /* Vertically and horizontally center */
+        }
+        
+        .warning-split-box {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        .warning-split-box.premium {
+            background: linear-gradient(145deg, var(--bg-premium), var(--bg-card));
+            border: 1px solid var(--border-premium);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .warning-split-box.free {
+            background: linear-gradient(145deg, var(--bg-free), var(--bg-card));
+            border: 1px solid var(--border-free);
+            box-shadow: 0 0 20px rgba(76, 154, 255, 0.1);
+        }
+
+        .warning-split-box h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .warning-split-box.premium h3 {
+            color: var(--gold-primary);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .warning-split-box.free h3 {
+            color: var(--blue-primary);
+            text-shadow: 0 0 10px rgba(76, 154, 255, 0.3);
+        }
+
+        .warning-split-box ul { 
+            list-style: none; 
+            padding: 0; 
+        }
+
+        .warning-split-box li {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .warning-split-box li i { 
+            margin-right: 12px; 
+            font-size: 1.1rem;
+        }
+
+        .warning-split-box.premium li i { 
+            color: var(--gold-secondary); 
+        }
+
+        .warning-split-box.free li i { 
+            color: var(--blue-secondary); 
+        }
+        /* === MODIFIED WARNING MODAL STYLES END === */
+
+        .close-btn {
+            background: var(--gradient-premium);
+            color: var(--bg-main);
+            padding: 16px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Enhanced Selection Screen */
+        .selection-screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-dark);
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        .selection-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 40px;
+        }
+
+        .selection-btn {
+            padding: 24px 40px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .selection-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .selection-btn:hover::before {
+            left: 100%;
+        }
+
+        .premium-btn {
+            background: var(--gradient-premium);
+            color: var(--bg-main);
+            border-color: var(--gold-primary);
+            box-shadow: var(--shadow-premium);
+        }
+
+        .premium-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.5);
+        }
+
+        .free-btn {
+            background: var(--gradient-free);
+            color: var(--bg-main);
+            border-color: var(--blue-primary);
+            box-shadow: var(--shadow-free);
+        }
+
+        .free-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 60px rgba(76, 154, 255, 0.5);
+        }
+
+        /* Enhanced Back Button */
+        .back-button-container { 
+            margin-bottom: 24px; 
+        }
+
+        .back-button {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background: var(--bg-premium);
+            border-color: var(--gold-primary);
+            transform: translateX(-2px);
+        }
+
+        /* Enhanced Box Styles */
+        .box {
+            background: var(--gradient-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 24px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .box.premium-box {
+            background: linear-gradient(145deg, var(--bg-premium), var(--bg-card));
+            border: 1px solid var(--border-premium);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        /* Enhanced Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-card);
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 700px; 
+        }
+
+        th, td { 
+            padding: 16px 12px; 
+            border-bottom: 1px solid var(--border-color); 
+            text-align: left; 
+            font-size: 14px; 
+        }
+
+        th {
+            background: var(--gradient-card);
+            font-weight: 700;
+            color: var(--text-secondary);
+            position: sticky; 
+            top: 0; 
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Enhanced Pill Styles */
+        .pill {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.3s;
+        }
+
+        .pill:hover::before {
+            left: 100%;
+        }
+
+        .pill.big { 
+            background: var(--pill-big-bg); 
+            color: var(--pill-big-color); 
+            border-color: var(--pill-big-border);
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.2);
+        }
+
+        .pill.small { 
+            background: var(--pill-small-bg); 
+            color: var(--pill-small-color); 
+            border-color: var(--pill-small-border);
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.2);
+        }
+
+        /* Status Colors */
+        .win { 
+            color: var(--success); 
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .lose { 
+            color: var(--error); 
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+        }
+
+        /* Enhanced Next Prediction */
+        .next-prediction {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .next-prediction .pill {
+            font-size: 14px;
+            padding: 10px 20px;
+        }
+
+        .issue-cell { 
+            font-size: 11px; 
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Premium Login Styles */
+        .login-page {
+            flex: 1; /* Allow growing */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-dark);
+            padding: 40px 20px;
+        }
+
+        .login-wrap {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .login-card {
+            margin-top: 20px;
+            padding: 24px;
+            border-radius: 16px;
+            background: var(--gradient-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 16px;
+            transition: var(--transition-smooth);
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-premium);
+            color: var(--bg-main);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin-bottom: 16px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-premium);
+        }
+
+        .login-hint {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .login-ok {
+            color: var(--success);
+            font-weight: 600;
+            text-align: center;
+            font-size: 1rem;
+            margin: 16px 0;
+        }
+
+        .login-err {
+            color: var(--error);
+            font-weight: 600;
+        }
+
+        /* CK Lottery Page - FIXED */
+        .ck-lottery-page {
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-main);
+            flex: 1; /* Grow to fill container */
+            position: relative; 
+            padding-bottom: 0px; /* remove padding */
+            height: 100vh; /* Set height to 100% of viewport height */
+            box-sizing: border-box; /* Include padding in height calculation */
+        }
+        
+        .ck-lottery-page iframe {
+            position: absolute; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            overflow: auto;
+        }
+        
+        .ck-lottery-page .header {
+            padding: 16px;
+            text-align: center;
+            background: var(--gradient-premium);
+            box-shadow: var(--shadow-card);
+            z-index: 100;
+            flex-shrink: 0; /* Prevent header from shrinking */
+            display: none; /* Hide the header as requested */
+        }
+
+        .ck-lottery-page .header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--bg-main);
+            font-weight: 800;
+        }
+        
+        /* Toolbar Styles */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar button:hover {
+            background: var(--gold-primary);
+            color: var(--bg-main);
+            border-color: var(--gold-primary);
+        }
+
+        /* === NEW Floating Menu Button Styles === */
+        .floating-menu-button {
+            position: fixed;
+            bottom: 20px; /* Adjust this value to move it up */
+            right: 20px;
+            z-index: 1001;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gold-primary);
+            color: var(--bg-main);
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+        .floating-menu-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+        /* Hide popup menu related styles */
+        .popup-menu, .popup-menu-item {
+            display: none !important;
+        }
+
+        /* Utility Classes */
+        .hidden { 
+            display: none !important; 
+        }
+
+        .stat {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .rules-grid span {
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .selection-buttons { 
+                max-width: 90%; 
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 20px;
+                width: calc(100% - 20px);
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
+            
+            .toolbar {
+                justify-content: center;
+            }
+            
+            .toolbar button {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .title {
+                font-size: 1.6rem;
+            }
+            
+            .floating-menu-button {
+                bottom: 15px; /* Adjust this value */
+                right: 15px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            .popup-menu {
+                bottom: 80px;
+                right: 15px;
+            }
+            
+            .popup-menu-item {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div id="warningOverlay" class="warning-overlay">
+            <div class="warning-vertical-container">
+                <div class="warning-split-box free">
+                    <h3>FREE PLAN</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> AI Pattern Prediction</li>
+                        <li><i class="fas fa-check-circle"></i> BigWin Website Open Bet</li>
+                    </ul>
+                    <hr style="border-color: var(--border-color); margin: 16px 0;">
+                    <div style="font-size: 0.95rem;">
+                        <strong><i class="fas fa-exclamation-triangle"></i> သတိထားသင့်တဲ့အချက်</strong>
+                        <ul style="margin-top: 8px;">
+                            <li><i class="fas fa-info-circle"></i> 3ခါလွဲရင် ကန်ထိုးရန်</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="warning-split-box premium">
+                    <h3>PREMIUM PLAN</h3>
+                    <ul>
+                        <li><i class="fas fa-crown"></i> BigWin Website Open Bet</li>
+                        <li><i class="fas fa-brain"></i> Premium Codes Record Prediction</li>
+                        <li><i class="fas fa-chart-line"></i> Results Big Small Record Prediction</li>
+                        <li><i class="fas fa-calculator"></i> Number Record Big Small Prediction</li>
+                        <li><i class="fas fa-robot"></i> Advanced AI Prediction</li>
+                    </ul>
+                    <hr style="border-color: var(--border-premium); margin: 16px 0;">
+                    <div style="font-size: 0.95rem;">
+                        <strong><i class="fas fa-lightbulb"></i> သိထားသင့်တဲ့အချက်</strong>
+                        <ul style="margin-top: 8px;">
+                            <li><i class="fas fa-signal" style="color: #ff6b6b;"></i> Low (ရှော့ရန် ထိုးရန်)</li>
+                            <li><i class="fas fa-signal" style="color: #ffa502;"></i> Medium (ပုံမှန် ထိုးရန်)</li>
+                            <li><i class="fas fa-signal" style="color: #2ed573;"></i> Height (ကြေးတင်ထိုးရန်)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="close-btn" onclick="closeWarning()">
+                        <i class="fas fa-check"></i> Start Now
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-pages">
+            <div id="selectionScreen" class="selection-screen hidden">
+                <div class="header">
+                    <h1 class="title">Lottery Tricks AI Prediction</h1>
+                    <p class="subtitle">Advanced AI-powered lottery prediction system</p>
+                    <p class="credit">Select a plan to start your session</p>
+                </div>
+                <div class="selection-buttons">
+                    <button id="premiumBtn" class="selection-btn premium-btn">
+                        <i class="fas fa-crown"></i> Premium Prediction
+                    </button>
+                    <button id="freeBtn" class="selection-btn free-btn">
+                        <i class="fas fa-zap"></i> Free Prediction
+                    </button>
+                </div>
+            </div>
+    
+            <div id="login-page" class="login-page hidden">
+                <div class="login-wrap">
+                    <div class="back-button-container">
+                        <button class="back-button" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Go Back
+                        </button>
+                    </div>
+                    
+                    <div class="container premium-style">
+                        <div class="header">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <i class="fas fa-crown" style="font-size: 3rem; color: var(--gold-primary);"></i>
+                            </div>
+                            <h2 class="title">Premium Access</h2>
+                            <p class="subtitle">Enter your premium access key</p>
+                            <p class="credit">Example: KEY-XXXXXXX. Another key will extend your time.</p>
+                        </div>
+                        
+                        <div class="login-card premium-box">
+                            <input id="keyInput" class="login-input" placeholder="KEY-XXXXXXX" autocomplete="one-time-code" />
+                            <button id="activateBtn" class="login-button">
+                                <i class="fas fa-key"></i> Activate Premium
+                            </button>
+                            <div id="msg" class="login-hint"></div>
+                        </div>
+                        
+                        <div id="login-timer" class="login-ok"></div>
+                        
+                        <div id="login-content" class="login-card premium-box hidden">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.2rem; font-weight: 800; color: var(--gold-primary); margin-bottom: 12px;">
+                                    <i class="fas fa-crown"></i> Premium Content Unlocked!
+                                </div>
+                                <p class="login-hint" style="margin-bottom: 16px;">
+                                    Keep this tab open. You can add another key anytime to extend.
+                                </p>
+                                <button class="login-button" onclick="logout()" style="background: var(--gradient-card); color: var(--text-primary); border: 1px solid var(--border-color);">
+                                    <i class="fas fa-sign-out-alt"></i> End Session
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div id="viewerPage" class="container viewer-page free-style hidden">
+                <div class="back-button-container">
+                    <button class="back-button" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </button>
+                </div>
+                
+                <div class="header">
+                    <h2 class="title free-title">Lottery Tricks AI Prediction V1.1</h2>
+                    <p class="subtitle">BigWin (WinGo30Sec Free)</p>
+                    <span class="credit">CRD BY PYAUNGGYI</span>
+                </div>
+                
+                <div class="box">
+                    <strong style="color: var(--blue-primary); font-size: 1.1rem;">
+                        <i class="fas fa-info-circle"></i> Win/Lose Rules
+                    </strong>
+                    <div class="rules-grid">
+                        <span><strong style="color: var(--pill-big-color);">BIG:</strong> 5, 6, 7, 8, 9</span>
+                        <span><strong style="color: var(--pill-small-color);">SMALL:</strong> 0, 1, 2, 3, 4</span>
+                    </div>
+                </div>
+                
+                <div class="box" id="nextBox-free" style="display:none">
+                    <div style="margin-bottom: 12px;">
+                        <strong style="color: var(--blue-primary);">
+                            <i class="fas fa-clock"></i> Next Issue:
+                        </strong> 
+                        <span id="nextIssue-free" style="color: var(--gold-primary); font-weight: 700;"></span>
+                    </div>
+                    <div class="next-prediction">
+                        <strong style="color: var(--blue-primary);">
+                            <i class="fas fa-target"></i> Next Prediction:
+                        </strong> 
+                        <span id="nextPred-free" class="pill"></span>
+                    </div>
+                    <div class="stat" id="statLine-free"></div>
+                    <div class="toolbar">
+                        <button id="btnCsv-free">
+                            <i class="fas fa-download"></i> Download CSV
+                        </button>
+                        <button id="btnJson-free">
+                            <i class="fas fa-download"></i> Download JSON
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> Issue</th>
+                                <th><i class="fas fa-dice"></i> Number</th>
+                                <th><i class="fas fa-eye"></i> Actual</th>
+                                <th><i class="fas fa-brain"></i> Predicted</th>
+                                <th><i class="fas fa-trophy"></i> Result</th>
+                                <th><i class="fas fa-star"></i> Premium</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-free">
+                            <tr>
+                                <td colspan="6" style="text-align:center; color: var(--text-muted); padding: 40px;">
+                                    <i class="fas fa-spinner animate-pulse" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                    Loading prediction data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    
+            <div id="premiumViewerPage" class="container viewer-page premium-style hidden">
+                <div class="back-button-container">
+                    <button class="back-button" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </button>
+                </div>
+                
+                <div class="header">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-crown" style="font-size: 2.5rem; color: var(--gold-primary); filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
+                    </div>
+                    <h2 class="title">Premium AI Prediction V1.1</h2>
+                    <p class="subtitle">BigWin (WinGo30Sec Premium)</p>
+                    <span class="credit">CRD BY PYAUNGGYI</span>
+                </div>
+                
+                <div class="box premium-box">
+                    <strong style="color: var(--gold-primary); font-size: 1.1rem;">
+                        <i class="fas fa-crown"></i> Premium Win/Lose Rules
+                    </strong>
+                    <div class="rules-grid">
+                        <span><strong style="color: var(--pill-big-color);">BIG:</strong> 5, 6, 7, 8, 9</span>
+                        <span><strong style="color: var(--pill-small-color);">SMALL:</strong> 0, 1, 2, 3, 4</span>
+                    </div>
+                </div>
+                
+                <div class="box premium-box" id="nextBox-premium" style="display:none">
+                    <div style="margin-bottom: 12px;">
+                        <strong style="color: var(--gold-primary);">
+                            <i class="fas fa-clock"></i> Next Issue:
+                        </strong> 
+                        <span id="nextIssue-premium" style="color: var(--gold-secondary); font-weight: 700;"></span>
+                    </div>
+                    <div class="next-prediction">
+                        <strong style="color: var(--gold-primary);">
+                            <i class="fas fa-brain"></i> AI Prediction:
+                        </strong> 
+                        <span id="nextPred-premium" class="pill"></span>
+                    </div>
+                    <div class="stat" id="statLine-premium"></div>
+                    
+                    <div style="margin-top: 20px; padding: 16px; background: rgba(255, 215, 0, 0.1); border-radius: 12px; border: 1px solid var(--border-premium);">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 0.9rem;">
+                            <div style="text-align: center;">
+                                <i class="fas fa-chart-bar" style="color: var(--gold-primary); margin-bottom: 4px; display: block;"></i>
+                                <strong>Pattern Analysis</strong>
+                            </div>
+                            <div style="text-align: center;">
+                                <i class="fas fa-brain" style="color: var(--gold-primary); margin-bottom: 4px; display: block;"></i>
+                                <strong>AI Learning</strong>
+                            </div>
+                            <div style="text-align: center;">
+                                <i class="fas fa-target" style="color: var(--gold-primary); margin-bottom: 4px; display: block;"></i>
+                                <strong>Precision Mode</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> Issue</th>
+                                <th><i class="fas fa-dice"></i> Number</th>
+                                <th><i class="fas fa-eye"></i> Actual</th>
+                                <th><i class="fas fa-brain"></i> AI Predicted</th>
+                                <th><i class="fas fa-trophy"></i> Result</th>
+                                <th><i class="fas fa-crown"></i> Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-premium">
+                            <tr>
+                                <td colspan="6" style="text-align:center; color: var(--text-muted); padding: 40px;">
+                                    <i class="fas fa-brain animate-pulse" style="font-size: 2rem; margin-bottom: 10px; display: block; color: var(--gold-primary);"></i>
+                                    Loading premium AI data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    
+            <div id="ckLotteryPage" class="ck-lottery-page hidden">
+                <iframe 
+                    src="https://www.777bigwingame.bet/#/register?invitationCode=22884102596" 
+                    title="BigWin Website" 
+                    frameborder="0"
+                    id="ckLotteryIframe">
+                </iframe>
+            </div>
+        </div>
+        
+        <button id="floatingToggleButton" class="floating-menu-button hidden">
+            <i id="buttonIcon" class="fas fa-ticket-alt"></i>
+        </button>
+
+    </div>
+
+    <script>
+        // --- Firebase Configurations ---
+        const lotteryooConfig = {
+            apiKey: "AIzaSyBynBT5W_C6rNVEUB4j7ABiJQeSfQGU4Mo",
+            authDomain: "lotteryoo.firebaseapp.com",
+            databaseURL: "https://lotteryoo-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "lotteryoo",
+            storageBucket: "lotteryoo.firebasestorage.app",
+            messagingSenderId: "72782915477",
+            appId: "1:72782915477:web:011fc0a614aff7c666b89c",
+            measurementId: "G-M06SN8YLD3"
+        };
+        
+        const bigwinConfig = {
+            apiKey: "AIzaSyArgde3-Xn0boi6FO-ZfN6vPPMRdULPN24",
+            authDomain: "bigwin30-3d1e2.firebaseapp.com",
+            databaseURL: "https://bigwin30-3d1e2-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "bigwin30-3d1e2",
+            storageBucket: "bigwin30-3d1e2.appspot.com",
+            messagingSenderId: "214823361254",
+            appId: "1:214823361254:web:9b9f101f2134e2bc48f927",
+            measurementId: "G-E4YSHMD6X4"
+        };
+
+        let lotteryooApp, bigwinApp, lotteryooDb, bigwinDb;
+        let isPremiumMode = false;
+        let currentActivePageId = 'selectionScreen';
+        let iframeLoaded = false;
+        
+        // --- UI Elements ---
+        const warningOverlay = document.getElementById("warningOverlay");
+        const selectionScreen = document.getElementById("selectionScreen");
+        const viewerPage = document.getElementById("viewerPage");
+        const premiumViewerPage = document.getElementById("premiumViewerPage");
+        const ckLotteryPage = document.getElementById("ckLotteryPage");
+        const loginPage = document.getElementById("login-page");
+        
+        // NEW SINGLE BUTTON ELEMENT
+        const floatingToggleButton = document.getElementById("floatingToggleButton");
+        const buttonIcon = document.getElementById("buttonIcon");
+        
+        const premiumBtn = document.getElementById("premiumBtn");
+        const freeBtn = document.getElementById("freeBtn");
+
+        // --- Enhanced View Control Functions ---
+        function closeWarning() {
+            warningOverlay.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                warningOverlay.classList.add("hidden");
+                selectionScreen.classList.remove("hidden");
+                selectionScreen.style.animation = 'fadeIn 0.5s ease-out';
+            }, 300);
+        }
+        
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.viewer-page, .login-page, .selection-screen, .ck-lottery-page').forEach(page => {
+                page.classList.add('hidden');
+                page.style.display = 'none';
+            });
+            
+            // Show target page
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+                activePage.classList.remove("hidden");
+                
+                // Set the correct display property based on the page's layout
+                const flexPages = ['selectionScreen', 'login-page', 'ckLotteryPage'];
+                if (flexPages.includes(pageId)) {
+                    activePage.style.display = 'flex';
+                } else {
+                    activePage.style.display = 'block';
+                }
+                
+                activePage.style.animation = 'fadeIn 0.4s ease-out';
+            }
+            
+            currentActivePageId = pageId;
+            
+            // Show/hide floating button and change its icon
+            if (pageId === 'viewerPage' || pageId === 'premiumViewerPage') {
+                floatingToggleButton.classList.remove('hidden');
+                buttonIcon.className = 'fas fa-ticket-alt'; // Icon to go to Lottery
+            } else if (pageId === 'ckLotteryPage') {
+                floatingToggleButton.classList.remove('hidden');
+                buttonIcon.className = 'fas fa-chart-line'; // Icon to go to Prediction
+            } else {
+                floatingToggleButton.classList.add('hidden');
+            }
+            
+            // Special handling for the iframe
+            if (pageId === 'ckLotteryPage' && !iframeLoaded) {
+                const iframe = document.getElementById('ckLotteryIframe');
+                iframe.src = "https://www.777bigwingame.bet/#/register?invitationCode=22884102596";
+                iframeLoaded = true;
+            } else if (pageId !== 'ckLotteryPage' && iframeLoaded) {
+                // Do not clear the iframe src to prevent refresh
+                // This block is now essentially empty, but we keep the logic to show intent
+            }
+        }
+        
+        function showViewerContent() {
+            if (isPremiumMode) {
+                showPage('premiumViewerPage');
+            } else {
+                showPage('viewerPage');
+            }
+        }
+
+        function goBack() {
+            // Instead of reloading, just hide the pages and show the selection screen
+            const currentPage = document.querySelector('.viewer-page:not(.hidden), .login-page:not(.hidden), .ck-lottery-page:not(.hidden)');
+            if (currentPage) {
+                currentPage.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    showPage('selectionScreen');
+                    isPremiumMode = false;
+                }, 300);
+            } else {
+                showPage('selectionScreen');
+            }
+        }
+
+        // --- Event Listeners with Enhanced Animations ---
+        premiumBtn.addEventListener("click", () => {
+            isPremiumMode = true;
+            premiumBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                premiumBtn.style.transform = '';
+                showPage('login-page');
+                startPremiumLogin();
+            }, 150);
+        });
+
+        freeBtn.addEventListener("click", () => {
+            isPremiumMode = false;
+            freeBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                freeBtn.style.transform = '';
+                showPage('viewerPage');
+                initFreeViewer();
+            }, 150);
+        });
+        
+        // NEW Toggle Button Logic
+        floatingToggleButton.addEventListener("click", () => {
+            if (currentActivePageId === 'viewerPage' || currentActivePageId === 'premiumViewerPage') {
+                showPage('ckLotteryPage');
+            } else if (currentActivePageId === 'ckLotteryPage') {
+                showViewerContent();
+            }
+        });
+        
+        // --- Helper Functions (Enhanced) ---
+        const toBigIntSafe = (x) => {
+            const s = String(x).replace(/\D/g, '') || "0";
+            try { return BigInt(s); } catch { return 0n; }
+        };
+        
+        const lastDigit = (n) => {
+            const s = String(n).trim();
+            const ch = s[s.length - 1];
+            const d = parseInt(ch, 10);
+            return Number.isNaN(d) ? 0 : d;
+        };
+        
+        const classify = (num) => (lastDigit(num) >= 5 ? "BIG" : "SMALL");
+        const pillClass = (v) => v === "BIG" ? "pill big" : "pill small";
+        
+        const modBI = (a, m) => {
+            const mm = BigInt(m);
+            let r = a % mm;
+            if (r < 0) r += mm;
+            return r;
+        };
+        
+        const downloadFile = (filename, content, mime) => {
+            const blob = new Blob([content], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(url);
+            a.remove();
+        };
+        
+        // --- Enhanced FREE Viewer Logic ---
+        const patternStr = ` BIG SMALL BIG SMALL SMALL BIG BIG SMALL SMALL BIG BIG SMALL SMALL BIG BIG SMALL SMALL SMALL SMALL BIG BIG SMALL SMALL BIG BIG SMALL SMALL BIG BIG SMALL BIG SMALL SMALL BIG BIG SMALL BIG SMALL SMALL BIG BIG SMALL BIG SMALL SMALL BIG BIG SMALL BIG SMALL SMALL BIG BIG SMALL BIG BIG SMALL SMALL BIG SMALL SMALL BIG BIG SMALL SMALL BIG BIG SMALL `;
+        const PATTERN = patternStr.trim().split(/\s+/).map(s => s.toUpperCase());
+        let computedRowsFree = [];
+        let headerInfoFree = { nextIssue: "", nextPrediction: "" };
+        let hasInitializedFree = false;
+
+        function initFreeViewer() {
+            if (hasInitializedFree) return;
+            hasInitializedFree = true;
+            
+            if (!bigwinApp) bigwinApp = firebase.initializeApp(bigwinConfig, "bigwin-free");
+            if (!bigwinDb) bigwinDb = firebase.database(bigwinApp);
+            const ref = bigwinDb.ref("bigwin/default");
+            
+            ref.on("value", (snap) => {
+                const v = snap.val();
+                if (!v) return;
+
+                let raw = Array.isArray(v.list) ? v.list.filter(Boolean) : (v.list && typeof v.list === 'object' ? Object.values(v.list) : []);
+                let list = raw.map(it => {
+                    const issueStr = String(it.issueNumber ?? it.issue ?? it.issue_no ?? "").trim();
+                    const issueBI = toBigIntSafe(issueStr);
+                    return { issueStr, issueBI, number: it.number ?? it.result ?? it.openNumber ?? "", premium: it.premium ?? "" };
+                }).filter(it => it.issueStr.length > 0);
+
+                if (list.length === 0) {
+                    document.getElementById("tbody-free").innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 40px;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>No data available yet...</td></tr>`;
+                    document.getElementById("nextBox-free").style.display = "none";
+                    computedRowsFree = [];
+                    return;
+                }
+                
+                const maxIssueBI = list.reduce((mx, it) => it.issueBI > mx ? it.issueBI : mx, -1n);
+                const nextIssueStr = (maxIssueBI + 1n).toString();
+                const nextPredIdx = Number(modBI(maxIssueBI + 1n, BigInt(PATTERN.length)));
+                const nextPred = PATTERN[nextPredIdx];
+
+                headerInfoFree = { nextIssue: nextIssueStr, nextPrediction: nextPred };
+                const nextBox = document.getElementById("nextBox-free");
+                nextBox.style.display = "block";
+                nextBox.style.animation = 'fadeIn 0.5s ease-out';
+                
+                document.getElementById("nextIssue-free").textContent = nextIssueStr;
+                const nextPredEl = document.getElementById("nextPred-free");
+                nextPredEl.textContent = nextPred;
+                nextPredEl.className = pillClass(nextPred);
+
+                list.sort((a, b) => (b.issueBI > a.issueBI ? 1 : (b.issueBI < a.issueBI ? -1 : 0)));
+                const len = PATTERN.length;
+                const tbody = document.getElementById("tbody-free");
+                tbody.innerHTML = "";
+                let win = 0, lose = 0;
+                computedRowsFree = [];
+
+                list.forEach((item, index) => {
+                    const actual = classify(item.number);
+                    const idx = Number(modBI(item.issueBI, BigInt(len)));
+                    const predicted = PATTERN[idx];
+                    const isWin = (predicted === actual);
+                    const resultText = isWin ? "Win" : "Lose";
+                    if (isWin) win++; else lose++;
+                    computedRowsFree.push({ issue: item.issueStr, number: String(item.number), actual, predicted, result: resultText, premium: String(item.premium ?? "") });
+                    
+                    const tr = document.createElement("tr");
+                    tr.style.animation = `fadeIn 0.3s ease-out ${index * 0.05}s both`;
+                    tr.innerHTML = `
+                        <td class="issue-cell">${item.issueStr}</td>
+                        <td style="font-weight: 600;">${item.number}</td>
+                        <td><span class="${pillClass(actual)}">${actual}</span></td>
+                        <td><span class="${pillClass(predicted)}">${predicted}</span></td>
+                        <td class="${isWin ? 'win' : 'lose'}">${resultText}</td>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">${item.premium ?? ""}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                document.getElementById("statLine-free").innerHTML = `
+                    <i class="fas fa-chart-bar"></i> History — 
+                    <span class="win">Win: ${win}</span>, 
+                    <span class="lose">Lose: ${lose}</span>
+                    <span style="color: var(--text-muted);"> | Accuracy: ${((win / (win + lose)) * 100).toFixed(1)}%</span>
+                `;
+            });
+
+            // Enhanced download functions
+            document.getElementById("btnCsv-free").addEventListener("click", () => {
+                const header = `Next Issue,${headerInfoFree.nextIssue}\nNext Prediction,${headerInfoFree.nextPrediction}\n\n`;
+                const cols = ["Issue","Number","Actual","Predicted","Win/Lose","Premium"];
+                const rows = computedRowsFree.map(r => [r.issue, r.number, r.actual, r.predicted, r.result, r.premium].map(x => `"${String(x).replace(/"/g,'""')}"`).join(","));
+                const csv = header + cols.join(",") + "\n" + rows.join("\n");
+                downloadFile(`free_prediction_${Date.now()}.csv`, csv, "text/csv;charset=utf-8");
+            });
+
+            document.getElementById("btnJson-free").addEventListener("click", () => {
+                const payload = { meta: headerInfoFree, rows: computedRowsFree };
+                const json = JSON.stringify(payload, null, 2);
+                downloadFile(`free_prediction_${Date.now()}.json`, json, "application/json;charset=utf-8");
+            });
+        }
+        
+        // --- Enhanced PREMIUM Viewer & Login Logic ---
+        let serverOffset = 0;
+        let expireTime = parseInt(localStorage.getItem("expireTime") || "0", 10) || 0;
+        let timerId = null;
+        let hasInitializedPremium = false;
+        
+        function setMsg(text, ok=true){
+            const el = document.getElementById("msg");
+            el.className = ok ? "login-hint login-ok" : "login-hint login-err";
+            el.innerHTML = ok ? `<i class="fas fa-check-circle"></i> ${text}` : `<i class="fas fa-exclamation-triangle"></i> ${text}`;
+        }
+        
+        function now(){ return Date.now() + serverOffset; }
+        
+        function startPremiumLogin() {
+            if (!lotteryooApp) lotteryooApp = firebase.initializeApp(lotteryooConfig, "lotteryoo");
+            if (!lotteryooDb) lotteryooDb = firebase.database(lotteryooApp);
+
+            lotteryooDb.ref(".info/serverTimeOffset").on("value", s => { serverOffset = s?.val() || 0; });
+            
+            if (timerId) clearInterval(timerId);
+            if (expireTime && now() < expireTime) {
+                startSession();
+            }
+
+            document.getElementById("activateBtn").onclick = async () => {
+                try {
+                    setMsg("");
+                    const input = document.getElementById("keyInput");
+                    const key = (input.value || "").trim().toUpperCase();
+                    if (!key) { 
+                        setMsg("Please enter a key", false); 
+                        input.style.animation = 'shake 0.5s ease-out';
+                        setTimeout(() => input.style.animation = '', 500);
+                        return; 
+                    }
+                    
+                    // Loading state
+                    const btn = document.getElementById("activateBtn");
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activating...';
+                    btn.disabled = true;
+                    
+                    const snap = await lotteryooDb.ref("keys/" + key).get();
+                    if (!snap.exists()) { 
+                        setMsg("Invalid Key", false);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return; 
+                    }
+                    
+                    const data = snap.val();
+                    if (data.used) { 
+                        setMsg("This key is already used!", false);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return; 
+                    }
+                    
+                    const extra = (data.duration || 0) * 60 * 1000;
+                    if (!extra) { 
+                        setMsg("Key has no duration.", false);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return; 
+                    }
+                    
+                    const newExpire = Math.max(now(), expireTime) + extra;
+                    await lotteryooDb.ref("keys/" + key).update({ 
+                        used: true, 
+                        activatedAt: firebase.database.ServerValue.TIMESTAMP, 
+                        expiresAt: newExpire 
+                    });
+                    
+                    expireTime = newExpire;
+                    localStorage.setItem("expireTime", String(expireTime));
+                    setMsg(`Key Activated Successfully! Added ${data.duration} minutes.`);
+                    input.value = "";
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    
+                    setTimeout(() => {
+                        startSession();
+                    }, 1500);
+                } catch (err) {
+                    console.error(err);
+                    setMsg("Activation failed: " + (err?.code || err?.message || err), false);
+                    document.getElementById("activateBtn").innerHTML = '<i class="fas fa-key"></i> Activate Premium';
+                    document.getElementById("activateBtn").disabled = false;
+                }
+            };
+            
+            document.getElementById("keyInput").onkeyup = (e) => { 
+                if(e.key==="Enter") document.getElementById("activateBtn").click(); 
+            };
+        }
+
+        function startSession(){
+            if(timerId) clearInterval(timerId);
+            
+            if(expireTime > now()){
+                showViewerContent();
+                initPremiumViewer();
+            } else {
+                showPage('login-page');
+            }
+            
+            timerId = setInterval(()=>{
+                const t = now();
+                if(expireTime > t){
+                    const remainSec = Math.floor((expireTime - t)/1000);
+                    const m = Math.floor(remainSec/60);
+                    const s = remainSec%60;
+                    document.getElementById("login-timer").innerHTML = `
+                        <i class="fas fa-clock"></i> Premium Time Remaining: 
+                        <span style="color: var(--gold-primary); font-weight: 700;">${m}m ${s.toString().padStart(2,"0")}s</span>
+                    `;
+                    document.getElementById("login-content").classList.remove("hidden");
+                }else{
+                    document.getElementById("login-timer").innerHTML = `
+                        <i class="fas fa-times-circle"></i> 
+                        <span style="color: var(--error);">Premium session expired</span>
+                    `;
+                    document.getElementById("login-content").classList.add("hidden");
+                    showPage('login-page');
+                    clearInterval(timerId);
+                }
+            }, 1000);
+        }
+        
+        function logout(){
+            if(confirm("End current premium session?")){
+                localStorage.removeItem("expireTime");
+                expireTime = 0;
+                document.getElementById("login-timer").textContent = "";
+                document.getElementById("login-content").classList.add("hidden");
+                if(timerId) clearInterval(timerId);
+                setMsg("Session ended successfully.");
+                setTimeout(() => {
+                    showPage('selectionScreen');
+                    isPremiumMode = false;
+                }, 1500);
+            }
+        }
+        
+        // --- Enhanced Premium Prediction Algorithm ---
+        let computedRowsPremium = [];
+        let headerInfoPremium = { nextIssue: "", nextPrediction: "", confidence: "" };
+        
+        function enhancedPrediction(history) {
+            const recent = history.slice(0, 12);
+            let prediction = "";
+            let confidence = "Low";
+            
+            // Advanced pattern analysis
+            const premiumResults = recent.filter(r => r.premium && r.premium !== "");
+            let premiumWinCount = premiumResults.filter(r => r.result === "Win").length;
+            let premiumWinRate = premiumResults.length > 0 ? premiumWinCount / premiumResults.length : 0;
+            
+            // High confidence predictions based on premium data
+            if (premiumWinRate > 0.7 && premiumResults.length > 3) {
+                const lastPremiumWin = premiumResults.find(r => r.result === "Win");
+                if (lastPremiumWin) {
+                    prediction = lastPremiumWin.predicted;
+                    confidence = "Height";
+                }
+            }
+            
+            // Medium confidence: Pattern detection
+            if (!prediction && recent.length >= 4) {
+                const last4 = recent.slice(0, 4).map(r => r.actual);
+                // Consecutive pattern
+                if (last4.every(val => val === last4[0])) {
+                    prediction = last4[0] === "BIG" ? "SMALL" : "BIG";
+                    confidence = "Medium";
+                }
+                // Alternating pattern
+                else if (last4[0] !== last4[1] && last4[1] !== last4[2] && last4[2] !== last4[3]) {
+                    prediction = last4[3];
+                    confidence = "Medium";
+                }
+            }
+            
+            // Advanced AI logic
+            if (!prediction && recent.length >= 6) {
+                const last6 = recent.slice(0, 6).map(r => r.actual);
+                const bigCount = last6.filter(v => v === "BIG").length;
+                const winCount = recent.slice(0, 6).filter(r => r.result === "Win").length;
+                
+                if (winCount > 4) {
+                    const lastWinner = recent.find(r => r.result === "Win");
+                    if (lastWinner) {
+                        prediction = lastWinner.predicted;
+                        confidence = "Medium";
+                    }
+                } else if (bigCount <= 2) {
+                    prediction = "BIG";
+                    confidence = "Medium";
+                } else if (bigCount >= 4) {
+                    prediction = "SMALL";
+                    confidence = "Medium";
+                } else {
+                    prediction = bigCount > 3 ? "SMALL" : "BIG";
+                    confidence = "Low";
+                }
+            }
+            
+            // Fallback prediction
+            if (!prediction) {
+                const recentWins = recent.filter(r => r.result === "Win");
+                if (recentWins.length > 0) {
+                    prediction = recentWins[0].predicted;
+                } else {
+                    prediction = Math.random() > 0.5 ? "BIG" : "SMALL";
+                }
+                confidence = "Low";
+            }
+            
+            return { prediction, confidence };
+        }
+        
+        function initPremiumViewer() {
+            if (hasInitializedPremium) return;
+            hasInitializedPremium = true;
+            
+            if (!bigwinApp) bigwinApp = firebase.initializeApp(bigwinConfig, "bigwin-premium");
+            if (!bigwinDb) bigwinDb = firebase.database(bigwinApp);
+            const bigwinRef = bigwinDb.ref("bigwin/default");
+
+            bigwinRef.on("value", (snap) => {
+                const v = snap.val();
+                if (!v) return;
+                
+                const raw = Array.isArray(v.list) ? v.list.filter(Boolean) : (v.list && typeof v.list === 'object' ? Object.values(v.list) : []);
+                
+                let list = raw.map(it => ({
+                    issueStr: String(it.issueNumber ?? it.issue ?? it.issue_no ?? "").trim(),
+                    issueBI: toBigIntSafe(it.issueNumber ?? it.issue ?? it.issue_no ?? ""),
+                    number: it.number ?? it.result ?? it.openNumber ?? "",
+                    premium: it.premium ?? ""
+                })).filter(it => it.issueStr.length > 0);
+                
+                if (list.length === 0) {
+                    document.getElementById("tbody-premium").innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 40px;"><i class="fas fa-crown" style="font-size: 2rem; margin-bottom: 10px; display: block; color: var(--gold-primary);"></i>No premium data available yet...</td></tr>`;
+                    document.getElementById("nextBox-premium").style.display = "none";
+                    computedRowsPremium = [];
+                    return;
+                }
+                
+                list.sort((a, b) => (b.issueBI > a.issueBI ? 1 : -1));
+                
+                const tbody = document.getElementById("tbody-premium");
+                tbody.innerHTML = "";
+                
+                computedRowsPremium = list.map(row => ({
+                    issue: row.issueStr,
+                    number: String(row.number),
+                    actual: classify(row.number),
+                    predicted: "", 
+                    result: "", 
+                    premium: String(row.premium ?? ""),
+                    confidence: ""
+                }));
+                
+                computedRowsPremium = computedRowsPremium.reverse();
+                
+                computedRowsPremium = computedRowsPremium.map((row, index, array) => {
+                    const history = array.slice(index + 1).reverse();
+                    const prediction = enhancedPrediction(history);
+                    const isWin = (prediction.prediction === row.actual);
+                    return { ...row, predicted: prediction.prediction, result: isWin ? "Win" : "Lose", confidence: prediction.confidence };
+                }).reverse();
+                
+                computedRowsPremium.forEach((row, index) => {
+                    const tr = document.createElement("tr");
+                    tr.style.animation = `fadeIn 0.3s ease-out ${index * 0.03}s both`;
+                    
+                    // Confidence color coding
+                    const confidenceColor = row.confidence === "Height" ? "var(--success)" : 
+                                          row.confidence === "Medium" ? "var(--warning)" : "var(--text-muted)";
+                    
+                    tr.innerHTML = `
+                        <td class="issue-cell">${row.issue}</td>
+                        <td style="font-weight: 600;">${row.number}</td>
+                        <td><span class="${pillClass(row.actual)}">${row.actual}</span></td>
+                        <td><span class="${pillClass(row.predicted)}">${row.predicted}</span></td>
+                        <td class="${row.result === 'Win' ? 'win' : 'lose'}">${row.result}</td>
+                        <td style="color: ${confidenceColor}; font-weight: 600; font-size: 0.8rem;">${row.confidence}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                const maxIssueBI = list.reduce((mx, it) => it.issueBI > mx ? it.issueBI : mx, -1n);
+                const nextIssueStr = (maxIssueBI + 1n).toString();
+                const nextPrediction = enhancedPrediction(computedRowsPremium);
+                
+                headerInfoPremium = {
+                    nextIssue: nextIssueStr,
+                    nextPrediction: nextPrediction.prediction,
+                    confidence: nextPrediction.confidence
+                };
+                
+                const nextBox = document.getElementById("nextBox-premium");
+                nextBox.style.display = "block";
+                nextBox.style.animation = 'fadeIn 0.5s ease-out';
+                
+                document.getElementById("nextIssue-premium").textContent = nextIssueStr;
+                
+                const nextPredEl = document.getElementById("nextPred-premium");
+                nextPredEl.textContent = `${nextPrediction.prediction} (${nextPrediction.confidence})`;
+                nextPredEl.className = pillClass(nextPrediction.prediction);
+                
+                const win = computedRowsPremium.filter(r => r.result === 'Win').length;
+                const total = computedRowsPremium.length;
+                const accuracy = total > 0 ? ((win / total) * 100).toFixed(1) : "0.0";
+                
+                document.getElementById("statLine-premium").innerHTML = `
+                    <i class="fas fa-crown"></i> Premium Analytics — 
+                    <span class="win">Win: ${win}</span>, 
+                    <span class="lose">Lose: ${total - win}</span>
+                    <span style="color: var(--gold-primary);"> | AI Accuracy: ${accuracy}%</span>
+                `;
+            });
+        }
+
+        // Enhanced keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!warningOverlay.classList.contains('hidden')) {
+                    closeWarning();
+                }
+            }
+        });
+
+        // Initialize app
+        window.onload = function() {
+            // Add loading animation to body
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 0.5s ease-out';
+                document.body.style.opacity = '1';
+            }, 100);
+        };
+    </script>
+</body>
+</html>
